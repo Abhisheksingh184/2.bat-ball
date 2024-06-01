@@ -4,42 +4,70 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bat ball stump game</title>
-    <style>
-      body {
-        text-align: center;
-      }
-    </style>
+    <link rel="stylesheet" href="cricket.css" />
+    
   </head>
   <body>
     <h1>Bat Ball Stump Game</h1>
+
     <button
+      class="choice-button"
       onclick="
       let computerchoice=generatecomputerchoice();
       let resultmsg=getresult('Bat',computerchoice);
       showResult('Bat',computerchoice,resultmsg); 
     "
     >
-      Bat
+      <img src="images/bat.jpg" alt="bat image" class="choice-image" />
     </button>
     <button
+      class="choice-button"
       onclick="
     computerchoice=generatecomputerchoice();
     resultmsg=getresult('Ball',computerchoice);
    showResult('Ball',computerchoice,resultmsg);
     "
     >
-      Ball
+      <img src="images/ball.jpg" alt="ball image" class="choice-image" />
     </button>
     <button
+      class="choice-button"
       onclick="
       computerchoice=generatecomputerchoice();
       resultmsg=getresult('Stump',computerchoice);
       showResult('Stump',computerchoice,resultmsg);
       "
     >
-      Stump
+      <img src="images/stump.jpg" alt="Stump image" class="choice-image" />
+    </button>
+    <h3 id="User-move"></h3>
+    <h3 id="Computer-move"></h3>
+    <h3 id="result"></h3>
+    <h3 id="score"></h3>
+
+    <button
+      onclick="localStorage.clear()
+    resetscore(scoreStr);
+    "
+    >
+      Reset
     </button>
     <script>
+      let scoreStr = localStorage.getItem("Score");
+      let score;
+      resetscore(scoreStr);
+      function resetscore(scoreStr) {
+        score = JSON.parse(scoreStr) || {
+          win: 0,
+          lost: 0,
+          tie: 0,
+        };
+
+        score.displayscore = function () {
+          return `Score: Won:${score.win},Lost:${score.lost},Tie:${score.tie}`;
+        };
+        showResult();
+      }
       function generatecomputerchoice() {
         let randomnumber = Math.random() * 3;
         if (randomnumber <= 1) {
@@ -53,34 +81,51 @@
       function getresult(userMove, computerMove) {
         if (userMove == "Bat") {
           if (computerMove == "Ball") {
+            score.win++;
             return "user won.";
           } else if (computerMove == "Bat") {
+            score.tie++;
             return `It's a tie`;
           } else if (computerMove == "Stump") {
+            score.lost++;
             return "Computer has won";
           }
         } else if (userMove == "Ball") {
           if (computerMove == "Bat") {
+            score.lost++;
             return "Computer has won";
           } else if (computerMove == "Ball") {
+            score.tie++;
             return `It's a tie`;
           } else {
+            score.win++;
             return "User has won";
           }
         } else {
           if (computerMove == "Bat") {
+            score.win++;
             return "user won.";
           } else if (computerMove == "Stump") {
+            score.tie++;
             return `It's a tie`;
           } else if (computerMove == "Ball") {
+            score.lost++;
             return "Computer has won";
           }
         }
       }
       function showResult(userMove, computerMove, result) {
-        alert(
-          `You have choosen ${userMove}. Computer choice is ${computerMove} and ${result} `
-        );
+        localStorage.setItem("Score", JSON.stringify(score));
+
+        document.querySelector("#User-move").innerText = userMove
+          ? `You have choosen ${userMove}`
+          : "";
+
+        document.querySelector("#Computer-move").innerText = computerMove
+          ? `Computer choice is ${computerMove}.`
+          : "";
+        document.querySelector("#result").innerText = result || "";
+        document.querySelector("#score").innerText = score.displayscore();
       }
     </script>
   </body>
